@@ -1,0 +1,266 @@
+<HTML>
+    <head>
+        <title> Slots_BarX </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=EB Garamond">
+    <style>
+        .button {
+            background-color: #b30000;
+            border: 2px solid Black;
+            color: Silver;
+            text-align: center;
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            top: 436px;
+            font-family: "EB Garamond";
+            font-weight: 1000;
+            font-size: 24px }
+        .buttonS {
+            background-color: #b30000;
+            border: 2px solid Black;
+            color: Silver;
+            text-align: center;
+            position: fixed;
+            width: 75px;
+            height: 75px;
+            top: 438px;
+            font-family: "EB Garamond";
+            font-weight: 1000;
+            font-size: 20px }
+    </style>
+    </head>
+    <body>
+        <canvas id=myCanvas width=530 height=528 style="background-color: #b30000"> </canvas>
+        <button id=myStake  class="buttonS"      style="left: 8px"      onclick="Stake()">STAKE</button>
+        <button id=myOne    class="button"       style="left: 108px"    onclick="One()"  ></button>
+        <button id=myTwo    class="button"       style="left: 218px"    onclick="Two()"  ></button>
+        <button id=myThree  class="button"       style="left: 328px"    onclick="Three()"></button>
+        <button id=myStart  class="button"       style="left: 438px"    onclick="Start()">START</button>
+        <script>
+        var ctx = myCanvas.getContext("2d");
+        var a1 = 0; a2 = 1; a3 = 2;
+        var b1 = 2; b2 = 1; b3 = 0;
+        var c1 = 1; c2 = 0; c3 = 1;     //for slots result  0=o, 1=X, 2=bar
+        var winnings = 50;  stake = 1; games = 0;
+        spare = 0;  sp = 0;             //spare varibles
+        var nudge = 0; n1 = 0; n2 = 0; n3 = 0;
+        var mode = 0; start = 0; win = 0;
+        function begin(){
+            ctx.fillStyle="Silver";         ctx.font="bold 100px EB Garamond"; ctx.fillText("BARX",60,75);  //draws title (BARX)
+            ctx.fillRect(97,97,106,306);    ctx.fillRect(207,97,106,306);   ctx.fillRect(317,97,106,306);
+            ctx.fillRect(102,92,96,316);    ctx.fillRect(212,92,96,316);    ctx.fillRect(322,92,96,316);
+            ctx.fillRect(107,87,86,326);    ctx.fillRect(217,87,86,326);    ctx.fillRect(327,87,86,326);
+            ctx.fillRect(112,82,76,336);    ctx.fillRect(222,82,76,336);    ctx.fillRect(332,82,76,336);    //draws columns
+            ctx.fillRect(0,423,532,110);                                                                    //draws button background
+            ctx.fillStyle="White";          ctx.fillRect(340,0,124,40);     ctx.strokeStyle="Black";
+            ctx.lineWidth=2;                ctx.beginPath();                ctx.moveTo(340,2);
+            ctx.lineTo(464,2);              ctx.moveTo(340,6);              ctx.lineTo(464,6);
+            ctx.moveTo(340,34);             ctx.lineTo(464,34);             ctx.moveTo(340,38);
+            ctx.lineTo(464,38);             ctx.stroke();                   ctx.strokeStyle="#b30000";
+            ctx.beginPath();                ctx.moveTo(382,0);              ctx.lineTo(382,40);
+            ctx.moveTo(424,0);              ctx.lineTo(424,40);             ctx.stroke();
+            ctx.fillStyle="Black";          ctx.font="bold 16px EB Garamond";
+            ctx.fillText("BAR",344,26);     ctx.fillText("BAR",386,26);     ctx.fillText("BAR",428,26);     //draws 3 bars
+            ctx.fillStyle="White";          ctx.strokeStyle="Black";        ctx.font="bold 40px EB Garamond";  
+            ctx.strokeText("X",347,73);     ctx.strokeText("X",389,73);     ctx.strokeText("X",431,73);       
+            ctx.fillText("X",347,73);       ctx.fillText("X",389,73);       ctx.fillText("X",431,73);       
+            ctx.strokeStyle="White";        ctx.strokeRect(340,40,124,40);  ctx.strokeRect(382,40,42,40);   //draws 3 Xs
+            ctx.font="bold 20px EB Garamond";
+            ctx.fillText("Winnings",437,154); ctx.fillText("Stake",437,255);                                //writes winning & stake
+        }
+        function draw(){
+            ctx.fillStyle="Black";          
+            ctx.fillRect(467,0,60,39);      ctx.fillRect(467,42,60,39);                                 //black out for £50 & £10
+            ctx.fillRect(427,160,100,39);   ctx.fillRect(427,260,100,39);                               //black out for winnings & stakes
+            ctx.fillStyle="White";          ctx.font="bold 28px EB Garamond";
+            ctx.fillText("£",469,30);       ctx.fillText(stake*10,484,30);                              //writes £50
+            ctx.fillText("£",469,70);       ctx.fillText(stake*5,484,70);                              //writes £10
+            ctx.fillStyle="#b30000";        ctx.fillRect(427,330,100,39);
+            if(win==2){ ctx.fillText("£",469,30);       ctx.fillText(stake*10,484,30);
+            ctx.fillStyle="White"; ctx.font="bold 30px EB Garamond"; ctx.fillText("£ £ £ £ £",428,360);   
+            }                                                                                           //writes £50
+            if(win==1){ ctx.fillText("£",469,70);       ctx.fillText(stake*5,484,70);
+            ctx.fillStyle="White"; ctx.font="bold 30px EB Garamond"; ctx.fillText("£",470,360); 
+            }                                                                                           //writes £10
+            ctx.fillStyle="White";          ctx.font="bold 20px EB Garamond";
+            ctx.fillText("£",437,185);      ctx.fillText(winnings,448,185);
+            ctx.fillText("£",437,285);      ctx.fillText(stake,448,285);                                //writes winnings & stakes values
+            ctx.fillStyle="Silver";         ctx.font="bold 100px EB Garamond";
+            ctx.fillText("3",20,180);       ctx.fillText("2",20,280);       ctx.fillText("1",22,380);   //draw count for holds/nudges
+            ctx.fillStyle="Black";          ctx.strokeStyle="Silver";
+            if(nudge>2){ ctx.strokeText("3",20,180); ctx.fillText("3",20,180) }
+            if(nudge>1){ ctx.strokeText("2",20,280); ctx.fillText("2",20,280) }
+            if(nudge>0){ ctx.strokeText("1",22,380); ctx.fillText("1",22,380) }                         //makes holds/nudges red
+            if(a1==0){      Nort(100,100) }     else if(a1==1){ Cross(100,100) }    else if(a1==2){ Bar(100,100) }
+            if(a2==0){      Nort(100,200) }     else if(a2==1){ Cross(100,200) }    else if(a2==2){ Bar(100,200) }
+            if(a3==0){      Nort(100,300) }     else if(a3==1){ Cross(100,300) }    else if(a3==2){ Bar(100,300) }
+            if(b1==0){      Nort(210,100) }     else if(b1==1){ Cross(210,100) }    else if(b1==2){ Bar(210,100) }
+            if(b2==0){      Nort(210,200) }     else if(b2==1){ Cross(210,200) }    else if(b2==2){ Bar(210,200) }
+            if(b3==0){      Nort(210,300) }     else if(b3==1){ Cross(210,300) }    else if(b3==2){ Bar(210,300) }
+            if(c1==0){      Nort(320,100) }     else if(c1==1){ Cross(320,100) }    else if(c1==2){ Bar(320,100) }
+            if(c2==0){      Nort(320,200) }     else if(c2==1){ Cross(320,200) }    else if(c2==2){ Bar(320,200) }
+            if(c3==0){      Nort(320,300) }     else if(c3==1){ Cross(320,300) }    else if(c3==2){ Bar(320,300) }  //draws o,x & bar
+        }
+        function Start(){
+        if(start==0){
+            start=1; games+=1;
+            if(stake>winnings){ stake=1 }
+            winnings-=stake;                    win=0;                              draw();
+            ctx.strokeStyle="Silver";           ctx.lineWidth=5;
+            ctx.fillStyle="black";
+            if(n2==0){
+                ctx.fillRect(210,100,100,300);
+                Random(); b1=sp; Random(); b2=sp; Random(); b3=sp;
+                if(b2==b1){ Random(); b1=sp }       if(b2==b3){ Random(); b3=sp } }         //sets middle row
+            if(n1==0){
+                ctx.fillRect(100,100,100,300);
+                Random(); a1=sp; Random(); a2=sp; Random(); a3=sp;
+                if(a2==a1){ Random(); a1=sp }       if(a2==a3){ Random(); a3=sp } }         //sets top row
+            if(n3==0){
+                ctx.fillRect(320,100,100,300);
+                Random(); c1=sp; Random(); c2=sp; Random(); c3=sp;
+                if(c2==c1){ Random(); c1=sp }       if(c2==c3){ Random(); c3=sp } }         //set bottom row
+            Line(110);                          setTimeout("Line(120)",10);         setTimeout("Line(130)",20);
+            setTimeout("Line(140)",30);         setTimeout("Line(150)",40);         setTimeout("Line(160)",50);
+            setTimeout("Line(170)",60);         setTimeout("Line(180)",70);         setTimeout("Line(190)",80);
+            setTimeout("Line(200)",90);         setTimeout("Line(210)",100);        setTimeout("Line(220)",110);
+            setTimeout("Line(230)",120);        setTimeout("Line(240)",130);        setTimeout("Line(250)",140);
+            setTimeout("Line(260)",150);        setTimeout("Line(270)",160);        setTimeout("Line(280)",170);
+            setTimeout("Line(290)",180);        setTimeout("Line(300)",190);        setTimeout("Line(310)",200);
+            setTimeout("Line(320)",210);        setTimeout("Line(330)",220);        setTimeout("Line(340)",230);
+            setTimeout("Line(350)",240);        setTimeout("Line(360)",250);        setTimeout("Line(370)",260);
+            setTimeout("Line(380)",270);        setTimeout("Line(390)",280);                                    //draws lines
+            setTimeout("LineOne()",330);
+            setTimeout("LineTwo()",530);
+            setTimeout("LineThree()",730);
+            setTimeout("Win()",1030);
+        } }
+        function Win(){
+            if(a2==b2&&a2==c2){ //if middle row the same
+                if(a2==1){ win=1; winnings+=stake*5 }                      if(a2==2){ win=2; winnings+=stake*10 }
+                mode=0; nudge=0; start=0; n1=0; n2=0; n3=0;                 document.getElementById("myOne").innerHTML="";
+                document.getElementById("myTwo").innerHTML="";              document.getElementById("myThree").innerHTML=""
+            }
+            else{ //if middle row is not all same
+                if(mode==0){
+                    spare=Math.floor(Math.random() * 10) + 1;
+                    if(sp==1){ //set up for nudges
+                        mode=1; nudge=3; n1=0; n2=0; n3=0;                      document.getElementById("myOne").innerHTML="NUDGE";
+                        document.getElementById("myTwo").innerHTML="NUDGE";     document.getElementById("myThree").innerHTML="NUDGE" }
+                    else if(sp==2){ //set up for holds
+                        mode=2; nudge=3; start=0; n1=0; n2=0; n3=0;             document.getElementById("myOne").innerHTML="HOLD";
+                        document.getElementById("myTwo").innerHTML="HOLD";      document.getElementById("myThree").innerHTML="HOLD" }
+                    else{ //sets up for normal game
+                        mode=0; nudge=0; start=0; n1=0; n2=0; n3=0;             document.getElementById("myOne").innerHTML="";
+                        document.getElementById("myTwo").innerHTML="";          document.getElementById("myThree").innerHTML="" }
+                }
+                else{
+                    mode=0; nudge=0; start=0; n1=0; n2=0; n3=0;                 document.getElementById("myOne").innerHTML="";
+                    document.getElementById("myTwo").innerHTML="";              document.getElementById("myThree").innerHTML="" }
+            }
+            if(winnings==0&&mode!==1){
+                if(games==1){
+                    alert("You lasted 1 game") }
+                else{
+                    alert("You lasted "+games+" games") }   
+            }
+            draw();
+        }
+        function Line(y){
+            ctx.beginPath();
+            if(n1==0){ ctx.moveTo(100,y); ctx.lineTo(200,y) }
+            if(n2==0){ ctx.moveTo(210,y); ctx.lineTo(310,y) }
+            if(n3==0){ ctx.moveTo(320,y); ctx.lineTo(420,y) }
+            ctx.stroke();
+        }
+        function Random(){
+            spare=Math.floor(Math.random() * 6) + 1;
+            if(spare<4){ sp=0 }                 else if(spare==4){ sp=2 }           else{ sp=1 }            //generates random for o,x,bar
+        }
+        function LineOne(){
+            if(a1==0){      Nort(100,100) }     else if(a1==1){ Cross(100,100) }    else if(a1==2){ Bar(100,100) }
+            if(b1==0){      Nort(210,100) }     else if(b1==1){ Cross(210,100) }    else if(b1==2){ Bar(210,100) }
+            if(c1==0){      Nort(320,100) }     else if(c1==1){ Cross(320,100) }    else if(c1==2){ Bar(320,100) }  //draws o,x & bar
+        }
+        function LineTwo(){
+            if(a2==0){      Nort(100,200) }     else if(a2==1){ Cross(100,200) }    else if(a2==2){ Bar(100,200) }
+            if(b2==0){      Nort(210,200) }     else if(b2==1){ Cross(210,200) }    else if(b2==2){ Bar(210,200) }
+            if(c2==0){      Nort(320,200) }     else if(c2==1){ Cross(320,200) }    else if(c2==2){ Bar(320,200) }  //draws o,x & bar
+        }
+        function LineThree(){
+            if(a3==0){      Nort(100,300) }     else if(a3==1){ Cross(100,300) }    else if(a3==2){ Bar(100,300) }
+            if(b3==0){      Nort(210,300) }     else if(b3==1){ Cross(210,300) }    else if(b3==2){ Bar(210,300) }
+            if(c3==0){      Nort(320,300) }     else if(c3==1){ Cross(320,300) }    else if(c3==2){ Bar(320,300) }  //draws o,x & bar
+        }
+        function Nort(x,y){
+            ctx.fillStyle="Black";      ctx.fillRect(x,y,100,100);      ctx.fillStyle="White";
+            ctx.font="bold 100px EB Garamond";   ctx.fillText("O",x+11,y+83);
+        }
+        function Cross(x,y){
+            ctx.fillStyle="#b30000";    ctx.fillRect(x,y,100,100);      ctx.fillStyle="White";
+            ctx.strokeStyle="Black";    ctx.lineWidth=2;                ctx.font="bold 100px EB Garamond";
+            ctx.strokeText("X",x+14,y+82); ctx.fillText("X",x+14,y+82);
+        }
+        function Bar(x,y){
+            ctx.fillStyle="White";      ctx.fillRect(x,y,100,100);      ctx.strokeStyle="Black";
+            ctx.lineWidth=3;            ctx.beginPath();                ctx.moveTo(x,y+5);
+            ctx.lineTo(x+100,y+5);      ctx.moveTo(x,y+15);             ctx.lineTo(x+100,y+15);
+            ctx.moveTo(x,y+85);         ctx.lineTo(x+100,y+85);         ctx.moveTo(x,y+95);
+            ctx.lineTo(x+100,y+95);     ctx.stroke();                   ctx.fillStyle="Black";
+            ctx.font="bold 40px EB Garamond"; ctx.fillText("BAR",x+9,y+64); 
+        }
+        function One(){
+            if(mode==1){ //if nudge setup
+                if(nudge>0){
+                    a3=a2; a2=a1; Random(); a1=sp; nudge-=1; draw();                //nudges column
+                    if(a2==b2&&a2==c2){ //if middle row the same
+                        if(a2==1||a2==2){
+                            Win() } }                                               //runs win
+                    if(nudge==0){ //if no more nudges left
+                        mode=3; Win() }                                             //resets to normal game
+            }   }
+            if(mode==2){ //if hold setup
+                if(n1==0){ n1=1; nudge-=1; draw() } }                               //holds column
+        }
+        function Two(){
+            if(mode==1){ //if nudge setup
+                if(nudge>0){
+                    b3=b2; b2=b1; Random(); b1=sp; nudge-=1; draw();                //nudges column
+                    if(a2==b2&&a2==c2){ //if middle row the same
+                        if(a2==1||a2==2){
+                            Win() } }                                               //runs win
+                    if(nudge==0){ //if no more nudges left
+                        mode=3; Win() }                                             //resets to normal game
+            }   }
+            if(mode==2){ //if hold setup
+                if(n2==0){ n2=1; nudge-=1; draw() } }                               //holds column
+        }
+        function Three(){
+            if(mode==1){ //if nudge setup
+                if(nudge>0){
+                    c3=c2; c2=c1; Random(); c1=sp; nudge-=1; draw();                //nudges column
+                    if(a2==b2&&a2==c2){ //if middle row the same
+                        if(a2==1||a2==2){
+                            Win() } }                                               //runs win
+                    if(nudge==0){ //if no more nudges left
+                        mode=3; Win() }                                             //resets to normal game
+            }   }
+            if(mode==2){ //if hold setup
+                if(n3==0){ n3=1; nudge-=1; draw() } }                               //holds column
+        }
+        function Stake(){
+        if(start==0){
+            if(stake==winnings){ stake=1 }
+            else if(stake==1){  stake=5 }
+            else if(stake<=5){  stake=10 }
+            else if(stake<=10){ stake=50 }
+            else if(stake<=50){ stake=1 }
+            if(stake>winnings){
+                stake=winnings }
+            win=0; draw()
+        } }
+        setTimeout("begin()",500);      setTimeout("draw()",500);
+        </script>
+    </body>
+</html>
