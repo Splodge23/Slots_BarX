@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <widget xmlns   = "http://www.w3.org/ns/widgets"
+        xmlns:gap   = "http://phonegap.com/ns/1.0"
+        id          = "title.splodge23.edu.mit.scratch"
+        versionCode = "10" 
+        version     = "1.0.0" >
+     <preference name="Fullscreen" value="true" />
+     <preference name="orientation" value="default"/>
+     <preference name="phonegap-version" value="cli-9.0.0" />
+    <name>Slots_BarX</name>
+    <description>
+Slot machine
+    </description>
+    <author href="http://scratch.mit.edu/users/splodge23" email="samuel.ryan.cz@gmail.com">
+        splodge23
+    </author>
+        <icon src="slot_icon.png"/>
+</widget>
